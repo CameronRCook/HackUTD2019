@@ -54,7 +54,7 @@ def scrapeProf(url) : #navigates to the coursebook page with the search criteria
 
 def getRating(name):
 
-    professor = Professor(name)
+    professor = re.sub('\s','+',Professor(name))
     #Initial Search for the Professor
     URL = "https://www.ratemyprofessors.com/search.jsp?queryoption=HEADER&queryBy=teacherName&schoolName=The+University+of+Texas+at+Dallas&schoolID=1273&query=" + name
     site = requests.get(URL)
@@ -112,6 +112,15 @@ def compProf(ratingList):
             index += 1
     
     return ratingList[bestIndex]
+
+
+def bestProfessor(coursePrefix, courseNum, term, year):
+    searchUrl = createURL(coursePrefix, year, term, courseNum)
+    if isPageGood(searchUrl):
+        return compProf(getRatingList(scrapeProf(searchUrl)))
+    else:
+        return None
+
 #absem
 #create url
 #scrap prof to array
