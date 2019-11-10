@@ -12,6 +12,19 @@ class Professor:
     def __init__(self, name):
         self.person = name
 
+def isPageGood(url):
+    site = requests.get(url)
+    soup = BeautifulSoup(site.content, "html.parser")
+    zeroMatches = soup.find("div", attrs ={"class" : "zeromatches"}) #if page is bad the find() will return "<div class="zeromatches"><p>No course sections matched your search criteria.</p><p>Please try again using fewer or different search terms.</p></div>"
+
+    badString = '<div class="zeromatches"><p>No course sections matched your search criteria.</p><p>Please try again using fewer or different search terms.</p></div>'
+
+    #tests to see if there is string denoting no results is in the page
+    if badString in str(zeroMatches) :
+        return False
+    else:
+        return True
+
 def abSem(semester) : #abbreviates the semester value to get the whole term ----returns the one letter abbreviation
     if semester.lower() == "fall":
         return "f"
@@ -41,6 +54,7 @@ def scrapeProf(url) : #navigates to the coursebook page with the search criteria
 
 def getRating(name):
 
+    name = re.sub('\s','+',name)
     professor = Professor(name)
     #Initial Search for the Professor
     URL = "https://www.ratemyprofessors.com/search.jsp?queryoption=HEADER&queryBy=teacherName&schoolName=The+University+of+Texas+at+Dallas&schoolID=1273&query=" + name
@@ -99,6 +113,16 @@ def compProf(ratingList):
             index += 1
     
     return ratingList[bestIndex]
+
+
+def bestProfessor(coursePrefix, courseNum, semester, year):
+    searchUrl = createURL(coursePrefix, year, semester, courseNum)
+    if isPageGood(searchUrl):
+        return compProf(getRatingList(scrapeProf(searchUrl)))
+    else:
+        return None
+
+
 #absem
 #create url
 #scrap prof to array
