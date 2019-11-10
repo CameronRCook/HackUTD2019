@@ -118,7 +118,7 @@ def compProf(ratingList):
 
 
 def bestProfessor(coursePrefix, courseNum, semester, year):
-    searchUrl = createURL(coursePrefix, year, term, courseNum)
+    searchUrl = createURL(coursePrefix, year, semester, courseNum)
     if isPageGood(searchUrl):
         return compProf(getRatingList(scrapeProf(searchUrl)))
     else:
