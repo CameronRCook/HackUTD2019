@@ -19,7 +19,6 @@ def scrapeProf(prefix,year,semester,number) : #navigates to the coursebook page 
     url = "https://coursebook.utdallas.edu/search/searchresults" + "/term_" + term + "/cp_" + prefix + "/" + str(number)
     site = urlopen(url)
     soup = BeautifulSoup(site, "html.parser")
-    [s.extract() for s in soup(['style', 'script', '[document]', 'head', 'title'])]
     visible_text = soup.getText()
     
     return visible_text
