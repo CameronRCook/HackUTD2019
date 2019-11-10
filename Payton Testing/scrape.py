@@ -49,6 +49,8 @@ def scrapeProf(url) : #navigates to the coursebook page with the search criteria
     i = 0
     while i < len(professorList): #changes the professor list full of jank into just the names
         professorList[i] = professorList[i].get_text()
+        if (professorList[i].count(" ") + 1) >= 2 : #if wordcount >=2
+            professorList[i] = professorList[i].split()[0] + " " + professorList[i].split()[-1]
         i = i + 1
     return professorList
 
@@ -77,14 +79,21 @@ def getRating(name):
         soup = BeautifulSoup(site.content, 'html.parser')
         search = soup.find_all('div', attrs={'class':'grade'})
 
+        if len(search) == 3:
         
-        quality = search[0].get_text()
-        takeAgain = search[1].get_text()
-        difficulty = search[2].get_text()
+            quality = search[0].get_text()
+            takeAgain = search[1].get_text()
+            difficulty = search[2].get_text()
 
-        professor.quality = re.sub('\s+','',quality)
-        professor.takeAgain = re.sub('\s+','',takeAgain)
-        professor.difficulty = re.sub('\s+','',difficulty)
+            professor.quality = re.sub('\s+','',quality)
+            professor.takeAgain = re.sub('\s+','',takeAgain)
+            professor.difficulty = re.sub('\s+','',difficulty)
+
+        else:
+
+            professor.quality = "0"
+            professor.takeAgain = "0"
+            professor.difficulty = "0"
 
 
     return professor
@@ -110,7 +119,7 @@ def compProf(ratingList):
         if quality > bestQuality:
             bestQuality = quality
             bestIndex = index
-            index += 1
+        index += 1
     
     return ratingList[bestIndex]
 
@@ -118,10 +127,16 @@ def compProf(ratingList):
 def bestProfessor(coursePrefix, courseNum, semester, year):
     searchUrl = createURL(coursePrefix, year, semester, courseNum)
     if isPageGood(searchUrl):
-        return compProf(getRatingList(scrapeProf(searchUrl)))
+        professor = compProf(getRatingList(scrapeProf(searchUrl)))
+        print(professor.person)
+        print(professor.quality)
+        print(professor.difficulty)
+        print(professor.takeAgain)
+        return 
     else:
         return None
 
+bestProfessor("cs", 6301, "spring", 2020)
 
 #absem
 #create url
