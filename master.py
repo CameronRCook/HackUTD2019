@@ -35,9 +35,9 @@ def abSem(semester) : #abbreviates the semester value to get the whole term ----
     else :
         return "And the Lord spake, saying, 'First shalt thou take out the Holy Pin. Then, shalt thou count to three, no more, no less. Three shall be the number thou shalt count, and the number of the counting shall be three. Four shalt thou not count, nor either count thou two, excepting that thou then proceed to three. Five is right out! Once the number three, being the third number, be reached, then lobbest thou thy Holy Hand Grenade of Antioch towards thou foe, who being naughty in my sight, shall snuff it.'"
 
-def createURL(prefix,year,semester,number) : #navigates to the coursebook page with the search criteria and returns creates a list of all the professors
+def createURL(coursePrefix, courseNum, semester, year) : #navigates to the coursebook page with the search criteria and returns creates a list of all the professors
     term = str(year%100) + abSem(semester=semester)
-    url = "https://coursebook.utdallas.edu/search/searchresults" + "/" + prefix + str(number) + "/term_" + term
+    url = "https://coursebook.utdallas.edu/search/searchresults" + "/" + coursePrefix + str(courseNum) + "/term_" + term
 
     return url
 
@@ -116,12 +116,21 @@ def compProf(ratingList):
     return ratingList[bestIndex]
 
 
-def bestProfessor(coursePrefix, courseNum, term, year):
+def bestProfessor(coursePrefix, courseNum, semester, year):
     searchUrl = createURL(coursePrefix, year, term, courseNum)
     if isPageGood(searchUrl):
         return compProf(getRatingList(scrapeProf(searchUrl)))
     else:
         return None
+
+def profList(coursePrefix, courseNum, semester, year) :
+    url = createURL(coursePrefix, courseNum, semester, year)
+    if isPageGood(url) :
+        return  scrapeProf(url) #this will return a list of prof names with no middle names (-Staff- is deleted)
+    else:
+        return None
+
+print(profList("cs", 6301, "spring", 2020))
 
 #absem
 #create url
