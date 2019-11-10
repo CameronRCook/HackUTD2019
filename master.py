@@ -12,6 +12,19 @@ class Professor:
     def __init__(self, name):
         self.person = name
 
+def isPageGood(url):
+    site = requests.get(url)
+    soup = BeautifulSoup(site.content, "html.parser")
+    zeroMatches = soup.find("div", attrs ={"class" : "zeromatches"}) #if page is bad the find() will return "<div class="zeromatches"><p>No course sections matched your search criteria.</p><p>Please try again using fewer or different search terms.</p></div>"
+
+    badString = '<div class="zeromatches"><p>No course sections matched your search criteria.</p><p>Please try again using fewer or different search terms.</p></div>'
+
+    #tests to see if there is string denoting no results is in the page
+    if badString in str(zeroMatches) :
+        return False
+    else:
+        return True
+
 def abSem(semester) : #abbreviates the semester value to get the whole term ----returns the one letter abbreviation
     if semester.lower() == "fall":
         return "f"
@@ -45,45 +58,60 @@ def getRating(name):
     #Initial Search for the Professor
     URL = "https://www.ratemyprofessors.com/search.jsp?queryoption=HEADER&queryBy=teacherName&schoolName=The+University+of+Texas+at+Dallas&schoolID=1273&query=" + name
     site = requests.get(URL)
-    
     soup = BeautifulSoup(site.content, 'html.parser')
     search = soup.find("a", href=re.compile("ShowRatings"))
-    URL = "https://www.ratemyprofessors.com" + search.get('href') # new link
     
-    
-    #Get Number from the actual professor page.
-    site = requests.get(URL)
-    soup = BeautifulSoup(site.content, 'html.parser')
-    search = soup.find_all('div', attrs={'class':'grade'})
-    
-    quality = search[0].get_text()
-    takeAgain = search[1].get_text()
-    difficulty = search[2].get_text()
+    if str(search) == "None":
+        professor.quality = "0"
+        professor.takeAgain = "0"
+        professor.difficulty = "0"
+        print("Professor was not found")
+    else:
 
-    professor.quality = re.sub('\s+','',quality)
-    professor.takeAgain = re.sub('\s+','',takeAgain)
-    professor.difficulty = re.sub('\s+','',difficulty)
+        URL = "https://www.ratemyprofessors.com" + search.get('href') # new link
+        
+        
+        #Get Number from the actual professor page.
+        site = requests.get(URL)
+        soup = BeautifulSoup(site.content, 'html.parser')
+        search = soup.find_all('div', attrs={'class':'grade'})
+
+        
+        quality = search[0].get_text()
+        takeAgain = search[1].get_text()
+        difficulty = search[2].get_text()
+
+        professor.quality = re.sub('\s+','',quality)
+        professor.takeAgain = re.sub('\s+','',takeAgain)
+        professor.difficulty = re.sub('\s+','',difficulty)
 
 
     return professor
 
-def topProf(professorList):
-    index = 0;
-    bestIndex = 0;
+def getRatingList(professorList):
+    index = 0
+    ratingList = []
+    for professor in professorList:
+        name = professorList[index]
+        ratingList.append(getRating(name))
+        index += 1
+    return ratingList
+
+
+def compProf(ratingList):
+    index = 0
+    bestIndex = 0
     bestQuality = 0.0
 
-    for professor in professorList:
-        string = professorList[index].quality
+    for professor in ratingList:
+        string = ratingList[index].quality
         quality = float(string)
         if quality > bestQuality:
             bestQuality = quality
             bestIndex = index
             index += 1
     
-    return professorList[bestIndex]
-
-def bestProf()
-
+    return ratingList[bestIndex]
 #absem
 #create url
 #scrap prof to array
