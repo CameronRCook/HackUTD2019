@@ -14,11 +14,14 @@ def abSem(semester) : #abbreviates the semester value to get the whole term ----
     else :
         return "And the Lord spake, saying, 'First shalt thou take out the Holy Pin. Then, shalt thou count to three, no more, no less. Three shall be the number thou shalt count, and the number of the counting shall be three. Four shalt thou not count, nor either count thou two, excepting that thou then proceed to three. Five is right out! Once the number three, being the third number, be reached, then lobbest thou thy Holy Hand Grenade of Antioch towards thou foe, who being naughty in my sight, shall snuff it.'"
 
-def scrapeProf(prefix,year,semester,number) : #navigates to the coursebook page with the search criteria and returns creates a list of all the professors
+def createURL(prefix,year,semester,number) : #navigates to the coursebook page with the search criteria and returns creates a list of all the professors
     term = str(year%100) + abSem(semester=semester)
     url = "https://coursebook.utdallas.edu/search/searchresults" + "/" + prefix + str(number) + "/term_" + term
-    site = requests.get(url)
 
+    return url
+
+def scrapeProf(url) : #navigates to the coursebook page with the search criteria and returns creates a list of all the professors
+    site = requests.get(url)
     soup = BeautifulSoup(site.content, "html.parser")
     professorList = soup.find_all("a", title=True, attrs ={"class" : "ptools-popover"})
 
@@ -28,4 +31,5 @@ def scrapeProf(prefix,year,semester,number) : #navigates to the coursebook page 
         i = i + 1
     return professorList
 
-print(scrapeProf(prefix="cs",year=2020,semester="spring",number=2336))
+url = createURL(prefix="cs",year=2020,semester="spring",number=2336)
+print(scrapeProf(url))
