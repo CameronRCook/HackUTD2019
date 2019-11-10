@@ -14,9 +14,9 @@ def abSem(semester) : #abbreviates the semester value to get the whole term ----
     else :
         return "And the Lord spake, saying, 'First shalt thou take out the Holy Pin. Then, shalt thou count to three, no more, no less. Three shall be the number thou shalt count, and the number of the counting shall be three. Four shalt thou not count, nor either count thou two, excepting that thou then proceed to three. Five is right out! Once the number three, being the third number, be reached, then lobbest thou thy Holy Hand Grenade of Antioch towards thou foe, who being naughty in my sight, shall snuff it.'"
 
-def createURL(prefix,year,semester,number) : #navigates to the coursebook page with the search criteria and returns creates a list of all the professors
+def createURL(coursePrefix, courseNum, semester, year) : #navigates to the coursebook page with the search criteria and returns creates a list of all the professors
     term = str(year%100) + abSem(semester=semester)
-    url = "https://coursebook.utdallas.edu/search/searchresults" + "/" + prefix + str(number) + "/term_" + term
+    url = "https://coursebook.utdallas.edu/search/searchresults" + "/" + coursePrefix + str(courseNum) + "/term_" + term
 
     return url
 
@@ -33,5 +33,5 @@ def scrapeProf(url) : #navigates to the coursebook page with the search criteria
         i = i + 1
     return professorList
 
-url = createURL(prefix="cs",year=2020,semester="spring",number=2336)
+url = createURL(coursePrefix="cs",year=2020,semester="spring",courseNum=2336)
 print(scrapeProf(url))

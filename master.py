@@ -35,9 +35,9 @@ def abSem(semester) : #abbreviates the semester value to get the whole term ----
     else :
         return "And the Lord spake, saying, 'First shalt thou take out the Holy Pin. Then, shalt thou count to three, no more, no less. Three shall be the number thou shalt count, and the number of the counting shall be three. Four shalt thou not count, nor either count thou two, excepting that thou then proceed to three. Five is right out! Once the number three, being the third number, be reached, then lobbest thou thy Holy Hand Grenade of Antioch towards thou foe, who being naughty in my sight, shall snuff it.'"
 
-def createURL(prefix,year,semester,number) : #navigates to the coursebook page with the search criteria and returns creates a list of all the professors
+def createURL(coursePrefix, courseNum, semester, year) : #navigates to the coursebook page with the search criteria and returns creates a list of all the professors
     term = str(year%100) + abSem(semester=semester)
-    url = "https://coursebook.utdallas.edu/search/searchresults" + "/" + prefix + str(number) + "/term_" + term
+    url = "https://coursebook.utdallas.edu/search/searchresults" + "/" + coursePrefix + str(courseNum) + "/term_" + term
 
     return url
 
@@ -117,12 +117,34 @@ def compProf(ratingList):
     return ratingList[bestIndex]
 
 
-def bestProfessor(coursePrefix, courseNum, term, year):
-    searchUrl = createURL(coursePrefix, year, term, courseNum)
+def bestProfessor(coursePrefix, courseNum, semester, year):
+    searchUrl = createURL(coursePrefix, year, semester, courseNum)
     if isPageGood(searchUrl):
         return compProf(getRatingList(scrapeProf(searchUrl)))
     else:
         return None
+
+def profList(coursePrefix, courseNum, semester, year) :
+    url = createURL(coursePrefix, courseNum, semester, year)
+    if isPageGood(url) :
+        return  scrapeProf(url) #this will return a list of prof names with no middle names (-Staff- is deleted)
+    else:
+        return None
+
+def scrapeOnline(coursePrefix, courseNum, semester, year) : #navigates to the coursebook page with the search criteria and returns creates a list of all the professors
+    url = createURL(coursePrefix, courseNum, semester, year)
+    if isPageGood(url):
+        site = requests.get(url)
+        soup = BeautifulSoup(site.content, "html.parser")
+        courseIDstr = (soup.find_all("a", attrs ={"class" : "stopbubble"}))
+        i = 0
+        for courseID in courseIDstr:
+            text = courseIDstr[i].get_text()
+            if text.split(".")[-1] == "0W1":
+                return True #there is at least one online section
+            i = i + 1
+        return False #there are no online sections
+    return None #the page was bad
 
 #absem
 #create url
