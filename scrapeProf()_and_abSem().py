@@ -28,6 +28,8 @@ def scrapeProf(url) : #navigates to the coursebook page with the search criteria
     i = 0
     while i < len(professorList): #changes the professor list full of jank into just the names
         professorList[i] = professorList[i].get_text()
+        if (professorList[i].count(" ") + 1) >= 2 : #if wordcount >=2
+            professorList[i] = professorList[i].split()[0] + " " + professorList[i].split()[-1]
         i = i + 1
     return professorList
 
