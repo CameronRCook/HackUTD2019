@@ -131,7 +131,20 @@ def profList(coursePrefix, courseNum, semester, year) :
     else:
         return None
 
-print(profList("cs", 6301, "spring", 2020))
+def scrapeOnline(coursePrefix, courseNum, semester, year) : #navigates to the coursebook page with the search criteria and returns creates a list of all the professors
+    url = createURL(coursePrefix, courseNum, semester, year)
+    if isPageGood(url):
+        site = requests.get(url)
+        soup = BeautifulSoup(site.content, "html.parser")
+        courseIDstr = (soup.find_all("a", attrs ={"class" : "stopbubble"}))
+        i = 0
+        for courseID in courseIDstr:
+            text = courseIDstr[i].get_text()
+            if text.split(".")[-1] == "0W1":
+                return True #there is at least one online section
+            i = i + 1
+        return False #there are no online sections
+    return None #the page was bad
 
 #absem
 #create url
