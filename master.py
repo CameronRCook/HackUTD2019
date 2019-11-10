@@ -56,7 +56,8 @@ def scrapeProf(url) : #navigates to the coursebook page with the search criteria
 
 def getRating(name):
 
-    professor = re.sub('\s','+',Professor(name))
+    name = re.sub('\s','+',name)
+    professor = Professor(name)
     #Initial Search for the Professor
     URL = "https://www.ratemyprofessors.com/search.jsp?queryoption=HEADER&queryBy=teacherName&schoolName=The+University+of+Texas+at+Dallas&schoolID=1273&query=" + name
     site = requests.get(URL)
